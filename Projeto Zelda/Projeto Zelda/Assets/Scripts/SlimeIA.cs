@@ -15,8 +15,8 @@ public class SlimeIA : MonoBehaviour
 
     public enemyState state;
 
-    public const float idleWaitTime = 3f;
-    public const float patrolWaitTime = 5f;
+    public const float idleWaitTime = 5f;
+    
 
     //IA do slime
     private NavMeshAgent agent;
@@ -146,7 +146,7 @@ public class SlimeIA : MonoBehaviour
 
     IEnumerator PATROL()
     {
-        yield return new WaitForSeconds(patrolWaitTime);
+        yield return new WaitUntil(() => agent.remainingDistance <= 0);
 
         StayStill(30); // 30% de chance de ficar parado e 70% de ficar em patrulha
 
