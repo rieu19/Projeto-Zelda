@@ -9,9 +9,10 @@ public class SlimeIA : MonoBehaviour
     private GameManager _GameManager;
 
     private Animator anim;
+    
     public ParticleSystem hitEffect;
+    
     public int HP;
-
     private bool isDie;
 
     public enemyState state;
@@ -21,6 +22,7 @@ public class SlimeIA : MonoBehaviour
     private bool isWalk;
     private bool isAlert;
     private bool isPlayerVisible;
+    private bool isAttack;
     private NavMeshAgent agent;
     private int idWayPoint;
     private Vector3 destination;
@@ -116,19 +118,35 @@ public class SlimeIA : MonoBehaviour
     {
         switch (state)
         {
+            case enemyState.ALERT:
+                LookAt();
+                break;
             
             case enemyState.FOLLOW:
                 //COMPORTAMENTO QUANDO ESTIVER SEGUINDO
 
+                LookAt();
                 destination = _GameManager.player.position;
                 agent.destination = destination;
+
+                if(agent.remainingDistance <= agent.stoppingDistance)
+                {
+                    Attack();
+                }
+
                 break;
 
             case enemyState.FURY:
                 //COMPORTAMENTO QUANDO ESTIVER EM FURIA
 
+                LookAt();
                 destination = _GameManager.player.position;
-                agent.destination = destination;         
+                agent.destination = destination;
+
+                if (agent.remainingDistance <= agent.stoppingDistance)
+                {
+                    Attack();
+                }
 
                 break;
 
@@ -141,11 +159,11 @@ public class SlimeIA : MonoBehaviour
     void ChangeState(enemyState newState)
     {
         StopAllCoroutines(); //ENCERRA TODAS AS CORROUTINAS
-        state = newState;
+        
         print(newState);
         isAlert = false;
 
-        switch (state)
+        switch (newState)
         {
             case enemyState.IDLE:
 
@@ -182,8 +200,10 @@ public class SlimeIA : MonoBehaviour
 
             case enemyState.FOLLOW:
 
+                
                 agent.stoppingDistance = _GameManager.slimeDistanceToAttack;
-
+                StartCoroutine("Follow");
+                
                 break;
 
             case enemyState.FURY:
@@ -194,6 +214,8 @@ public class SlimeIA : MonoBehaviour
 
                 break;
         }
+
+        state = newState;
     }
 
     IEnumerator IDLE()
@@ -225,7 +247,22 @@ public class SlimeIA : MonoBehaviour
         }
     }
 
+    IEnumerator Follow()
+    {
+        yield return new WaitUntil(() => !isPlayerVisible);
 
+        print("perdi você");
+
+        yield return new WaitForSeconds(_GameManager.slimeAlertTime);
+
+        StayStill(50);
+    }
+
+    IEnumerator ATTACK()
+    {
+        yield return new WaitForSeconds(_GameManager.slimeAttackDelay);
+        isAttack = false;
+    }
 
     void StayStill(int yes)
     {
@@ -243,6 +280,30 @@ public class SlimeIA : MonoBehaviour
     {
         int rand = Random.Range(0, 100); // 0, 1, 2, 3... 99.
         return rand;
+    }
+
+    void Attack()
+    {
+        if (isAttack == false && isPlayerVisible == true)
+        {
+            isAttack = true;
+            anim.SetTrigger("Attack");
+        }
+    
+    }
+
+    void AttackIsDone()
+    {
+        StartCoroutine("ATTACK");
+    }
+
+    void LookAt()
+    {
+        
+        Vector3 lookDirection = (_GameManager.player.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
+        
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, _GameManager.slimeLookAtSpeed * Time.deltaTime);
     }
 
 
