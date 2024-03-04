@@ -106,7 +106,7 @@ public class PlayerController : MonoBehaviour
             isWalk = false;
         }
 
-        controller.Move(direction * movementSpeed * Time.deltaTime);
+        controller.Move(new Vector3(horizontal, 0, vertical) * movementSpeed * Time.deltaTime);
     }
 
     //MÉTODO RESPONSAVEL EM ATUALIZAR O ANIMATOR
