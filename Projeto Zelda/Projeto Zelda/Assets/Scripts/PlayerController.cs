@@ -123,7 +123,7 @@ public class PlayerController : MonoBehaviour
     void GetHit(int amount)
     {
         HP -= amount;
-        if(HP < 0)
+        if(HP > 0)
         {
             anim.SetTrigger("Hit");
         }
