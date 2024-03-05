@@ -6,11 +6,16 @@ using UnityEngine.Rendering.PostProcessing;
 
 public enum enemyState
 {
-    IDLE, ALERT, PATROL, FOLLOW, FURY 
+    IDLE, ALERT, PATROL, FOLLOW, FURY, DIE
 }
 
+public enum GameState
+{
+    GAMEPLAY, DIE
+}
 public class GameManager : MonoBehaviour
 {
+    public GameState gameState;
 
     public Transform player;
 
@@ -112,5 +117,12 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
+
+    public void ChangeGameState(GameState newState)
+    {
+        gameState = newState;
+    }
+
+
 
 }

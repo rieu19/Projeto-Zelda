@@ -68,6 +68,9 @@ public class SlimeIA : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if(_GameManager.gameState != GameState.GAMEPLAY) { return; }
+
+
         if(other.gameObject.tag == "Player")
         {
             isPlayerVisible = true;
@@ -75,6 +78,11 @@ public class SlimeIA : MonoBehaviour
             if (state == enemyState.IDLE || state == enemyState.PATROL)
             {
                 ChangeState(enemyState.ALERT);
+            }
+            else if (state == enemyState.FOLLOW)
+            {
+                StopCoroutine("FOLLOW");
+                ChangeState(enemyState.FOLLOW);
             }
             
         }
@@ -104,6 +112,7 @@ public class SlimeIA : MonoBehaviour
         }
         else // <=
         {
+            ChangeState(enemyState.DIE);
             anim.SetTrigger("Die");
             StartCoroutine("Died");
         }
@@ -116,6 +125,12 @@ public class SlimeIA : MonoBehaviour
 
     void StateManager()
     {
+        if (_GameManager.gameState == GameState.DIE && (state == enemyState.FOLLOW || state == enemyState.FURY || state == enemyState.ALERT))
+        {
+            ChangeState(enemyState.IDLE);
+        }
+
+
         switch (state)
         {
             case enemyState.ALERT:
@@ -158,10 +173,11 @@ public class SlimeIA : MonoBehaviour
 
     void ChangeState(enemyState newState)
     {
-        StopAllCoroutines(); //ENCERRA TODAS AS CORROUTINAS
+        StopAllCoroutines(); //ENCERRA TODAS AS COROUTINAS
         
         print(newState);
         isAlert = false;
+        isAttack = true;
 
         switch (newState)
         {
@@ -202,7 +218,7 @@ public class SlimeIA : MonoBehaviour
 
                 
                 agent.stoppingDistance = _GameManager.slimeDistanceToAttack;
-                StartCoroutine("Follow");
+                StartCoroutine("FOLLOW");
                 
                 break;
 
@@ -212,6 +228,13 @@ public class SlimeIA : MonoBehaviour
                 agent.stoppingDistance = _GameManager.slimeDistanceToAttack;
                 agent.destination = destination;
 
+                break;
+
+            case enemyState.DIE:
+                
+                destination = transform.position;
+                agent.destination = destination;
+                
                 break;
         }
 

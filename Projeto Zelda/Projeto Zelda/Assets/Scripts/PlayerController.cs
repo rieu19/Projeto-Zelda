@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
+    private GameManager _GameManager;
     private CharacterController controller;
     private Animator anim;
 
@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _GameManager = FindObjectOfType(typeof(GameManager)) as GameManager;
         controller = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
     }
@@ -41,6 +42,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(_GameManager.gameState != GameState.GAMEPLAY) { return; }
+
+
         Inputs();
         
         MoveCharacter();
@@ -129,6 +133,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            _GameManager.ChangeGameState(GameState.DIE);
             anim.SetTrigger("Die");
         }
     }
