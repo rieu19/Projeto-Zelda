@@ -63,6 +63,12 @@ public class SlimeIA : MonoBehaviour
     {
         isDie = true;
         yield return new WaitForSeconds(2.5f);
+
+        if (_GameManager.Perc(_GameManager.percDrop))
+        {
+            Instantiate(_GameManager.gemPrefab, transform.position, _GameManager.gemPrefab.transform.rotation);
+        }
+
         Destroy(this.gameObject); 
     }
 

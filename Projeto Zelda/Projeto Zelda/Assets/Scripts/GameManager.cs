@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.UI;
 
 
 public enum enemyState
@@ -17,7 +18,17 @@ public class GameManager : MonoBehaviour
 {
     public GameState gameState;
 
+    [Header("Info Player")]
     public Transform player;
+    private int gems;
+
+    [Header("UI")]
+    public Text txtGem;
+
+    [Header("Drop Item")]
+    public GameObject gemPrefab;
+    public int percDrop = 25; // valor de chance de dropar
+
 
     [Header("Slime IA")]
     public float slimeIdleWaitTime;
@@ -42,6 +53,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         rainModule = rainParticle.emission;
+        txtGem.text = gems.ToString();
     }
 
     // Update is called once per frame
@@ -121,6 +133,19 @@ public class GameManager : MonoBehaviour
     public void ChangeGameState(GameState newState)
     {
         gameState = newState;
+    }
+
+    public void setGem(int amount)
+    {
+        gems += amount;
+        txtGem.text = gems.ToString();
+    }
+
+    public bool Perc(int p)
+    {
+        int temp = Random.Range(0, 100);
+        bool retorno = temp <= p ? true : false;
+        return retorno;
     }
 
 

@@ -31,6 +31,16 @@ public class PlayerController : MonoBehaviour
     public Collider[] hitInfo;
     public int amountDmg;
 
+
+    [Header("Jump Controller")]
+    public Transform groundCheck;
+    public LayerMask whatIsGround;
+    public float gravity = -19.62f;
+    public float jumpHeight;
+    private bool isGrounded;
+    private Vector3 velocity;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -53,6 +63,11 @@ public class PlayerController : MonoBehaviour
         
     }
 
+    private void FixedUpdate()
+    {
+        isGrounded = Physics.CheckSphere(groundCheck.position, 0.3f, whatIsGround);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "TakeDamage")
@@ -73,6 +88,13 @@ public class PlayerController : MonoBehaviour
         {
             Attack();
         }
+
+        if (Input.GetButtonDown("Jump") && isGrounded == true)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+        }
+
+
     }
 
     void Attack()
@@ -111,12 +133,25 @@ public class PlayerController : MonoBehaviour
         }
 
         controller.Move(direction * movementSpeed * Time.deltaTime);
+
+        if(isGrounded == true && velocity.y <0)
+        {
+            velocity.y = -2;
+        }
+        velocity.y += gravity * Time.deltaTime;
+
+        controller.Move(velocity * Time.deltaTime);
+
+
+
+
     }
 
     //MÉTODO RESPONSAVEL EM ATUALIZAR O ANIMATOR
     void UpdateAnimator()
     {
         anim.SetBool("isWalk", isWalk);
+        anim.SetBool("isGrounded", isGrounded);
     }
 
     void AttackIsDone()

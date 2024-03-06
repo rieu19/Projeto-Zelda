@@ -1,0 +1,2 @@
+E:\Git Projetos\Projeto-Zelda\Projeto Zelda\Projeto Zelda\obj\Debug\Assembly-CSharp.csproj.AssemblyReference.cache
+E:\Git Projetos\Projeto-Zelda\Projeto Zelda\Projeto Zelda\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
